@@ -42,7 +42,7 @@ func New() *mux.Router {
 	r.HandleFunc("/portfolio/{slug}", portfolioHandler.GetProject).Methods(http.MethodGet)
 
 	// Secure static files handler
-	r.PathPrefix("/static/").Handler(http.StripPrefix("/static/", middleware.SecureStaticHandler(http.Dir("static"))))
+	r.PathPrefix("/static/").Handler(http.StripPrefix("/static/", middleware.SecureStaticHandler(http.Dir("static/"))))
 
 	// Custom error handlers
 	r.NotFoundHandler = http.HandlerFunc(handlers.NotFound)
