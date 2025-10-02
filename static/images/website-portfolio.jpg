@@ -1,0 +1,32 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="800" height="600" viewBox="0 0 800 600">
+  <rect width="800" height="600" fill="#303446"/>
+  <rect x="50" y="50" width="700" height="60" fill="#ca9ee6" rx="8"/>
+  <circle cx="100" cy="80" r="15" fill="#292c3c"/>
+  <text x="150" y="90" font-family="Arial, sans-serif" font-size="24" fill="#292c3c" font-weight="bold">Portfolio</text>
+  
+  <rect x="50" y="150" width="700" height="400" fill="#414559" rx="12"/>
+  <rect x="70" y="170" width="660" height="60" fill="#8caaee" rx="8"/>
+  <text x="90" y="210" font-family="Arial, sans-serif" font-size="32" fill="#303446" font-weight="bold">Welcome to My Portfolio</text>
+  
+  <rect x="90" y="260" width="200" height="40" fill="#a6d189" rx="6"/>
+  <text x="180" y="285" font-family="Arial, sans-serif" font-size="16" fill="#303446" text-anchor="middle">View Projects</text>
+  
+  <rect x="310" y="260" width="200" height="40" fill="#e5c890" rx="6"/>
+  <text x="410" y="285" font-family="Arial, sans-serif" font-size="16" fill="#303446" text-anchor="middle">Read Blog</text>
+  
+  <text x="90" y="340" font-family="Arial, sans-serif" font-size="18" fill="#c6d0f5">About Me</text>
+  <text x="90" y="370" font-family="Arial, sans-serif" font-size="14" fill="#b5bfe2">I'm a passionate software engineer specializing in building</text>
+  <text x="90" y="390" font-family="Arial, sans-serif" font-size="14" fill="#b5bfe2">robust web applications with Go and modern web technologies.</text>
+  
+  <rect x="90" y="420" width="100" height="20" fill="#51576d" rx="4"/>
+  <text x="140" y="435" font-family="Arial, sans-serif" font-size="12" fill="#c6d0f5" text-anchor="middle">Go</text>
+  
+  <rect x="200" y="420" width="100" height="20" fill="#51576d" rx="4"/>
+  <text x="250" y="435" font-family="Arial, sans-serif" font-size="12" fill="#c6d0f5" text-anchor="middle">Templ</text>
+  
+  <rect x="310" y="420" width="100" height="20" fill="#51576d" rx="4"/>
+  <text x="360" y="435" font-family="Arial, sans-serif" font-size="12" fill="#c6d0f5" text-anchor="middle">Docker</text>
+  
+  <rect x="420" y="420" width="100" height="20" fill="#51576d" rx="4"/>
+  <text x="470" y="435" font-family="Arial, sans-serif" font-size="12" fill="#c6d0f5" text-anchor="middle">Security</text>
+</svg>
