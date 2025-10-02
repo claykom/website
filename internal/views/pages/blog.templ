@@ -56,8 +56,8 @@ templ BlogPost(post models.BlogPost) {
 							}
 						</div>
 					</header>
-					<div class="post-content">
-						<p>{ post.Content }</p>
+					<div class="post-content markdown-content">
+						@templ.Raw(post.Content)
 					</div>
 					<footer class="post-footer">
 						<a href="/blog" class="back-link">← Back to Blog</a>

@@ -2,6 +2,7 @@ package router
 
 import (
 	"net/http"
+	"time"
 
 	"github.com/claykom/website/internal/handlers"
 	"github.com/claykom/website/internal/middleware"
@@ -16,10 +17,17 @@ func New() *mux.Router {
 	blogHandler := handlers.NewBlogHandler()
 	portfolioHandler := handlers.NewPortfolioHandler()
 
-	// Apply global middleware
+	// Initialize middleware dependencies
+	rateLimitStore := middleware.NewRateLimitStore(5 * time.Minute)
+	validator := middleware.NewValidator()
+
+	// Apply global middleware in order of importance
 	r.Use(middleware.Recovery)
 	r.Use(middleware.Logger)
 	r.Use(middleware.SecureHeaders)
+	r.Use(middleware.InputValidation(validator))
+	// Rate limit: 100 requests per minute per IP
+	r.Use(middleware.RateLimit(rateLimitStore, 100, time.Minute))
 
 	// Page routes
 	r.HandleFunc("/", handlers.Home).Methods(http.MethodGet)
@@ -33,8 +41,8 @@ func New() *mux.Router {
 	r.HandleFunc("/portfolio", portfolioHandler.ListProjects).Methods(http.MethodGet)
 	r.HandleFunc("/portfolio/{slug}", portfolioHandler.GetProject).Methods(http.MethodGet)
 
-	// Static files
-	r.PathPrefix("/static/").Handler(http.StripPrefix("/static/", http.FileServer(http.Dir("static"))))
+	// Secure static files handler
+	r.PathPrefix("/static/").Handler(http.StripPrefix("/static/", middleware.SecureStaticHandler(http.Dir("static"))))
 
 	// Custom error handlers
 	r.NotFoundHandler = http.HandlerFunc(handlers.NotFound)

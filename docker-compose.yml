@@ -1,0 +1,56 @@
+version: '3.8'
+
+services:
+  website:
+    build:
+      context: .
+      dockerfile: Dockerfile
+    container_name: website
+    ports:
+      - "8080:8080"
+    environment:
+      - HOST=0.0.0.0
+      - PORT=8080
+      - ENV=production
+      - READ_TIMEOUT=15s
+      - WRITE_TIMEOUT=15s
+      - IDLE_TIMEOUT=60s
+      - LOG_LEVEL=info
+    restart: unless-stopped
+    security_opt:
+      - no-new-privileges:true
+    read_only: true
+    tmpfs:
+      - /tmp:noexec,nosuid,size=100m
+    healthcheck:
+      test: ["CMD-SHELL", "wget --no-verbose --tries=1 --spider http://localhost:8080/health || exit 1"]
+      interval: 30s
+      timeout: 10s
+      retries: 3
+      start_period: 40s
+    networks:
+      - website-network
+
+  # Optional: Add nginx reverse proxy for additional security
+  nginx:
+    image: nginx:alpine
+    container_name: website-nginx
+    ports:
+      - "80:80"
+      - "443:443"
+    volumes:
+      - ./nginx.conf:/etc/nginx/nginx.conf:ro
+      - ./certs:/etc/nginx/certs:ro
+    depends_on:
+      - website
+    restart: unless-stopped
+    security_opt:
+      - no-new-privileges:true
+    networks:
+      - website-network
+    profiles:
+      - nginx
+
+networks:
+  website-network:
+    driver: bridge

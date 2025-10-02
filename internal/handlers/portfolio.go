@@ -17,36 +17,22 @@ type PortfolioHandler struct {
 
 // NewPortfolioHandler creates a new PortfolioHandler
 func NewPortfolioHandler() *PortfolioHandler {
-	// Sample data for demonstration
+	// Portfolio project showcasing this website
 	return &PortfolioHandler{
 		projects: []models.Project{
 			{
 				ID:           "1",
-				Title:        "E-commerce Platform",
-				Slug:         "ecommerce-platform",
-				Description:  "A full-featured e-commerce platform built with Go and React",
-				Content:      "This project showcases a complete e-commerce solution with product management, shopping cart functionality, secure payment processing, and order tracking. Built with a Go backend API and a modern React frontend, it demonstrates best practices in full-stack development including RESTful API design, database optimization, and responsive UI design.",
-				ImageURL:     "/static/images/ecommerce.jpg",
-				ProjectURL:   "https://example.com",
-				GithubURL:    "https://github.com/claykom/ecommerce",
-				Technologies: []string{"Go", "React", "PostgreSQL", "Docker"},
+				Title:        "Personal Website & Portfolio",
+				Slug:         "personal-website-portfolio",
+				Description:  "A modern, secure Go web application built with security-first design and production-ready deployment",
+				Content:      "This website itself serves as a portfolio piece, demonstrating modern Go web development practices. Built with Go 1.25, it features comprehensive security middleware including rate limiting, input validation, and security headers. The application uses Templ for type-safe HTML templating and follows clean architecture principles with a well-organized internal package structure. Container security is implemented through multi-stage Docker builds, non-root user execution, and read-only filesystems. The project includes automated health checks, structured logging, and supports both HTTP and HTTPS deployment with proper TLS configuration. Additional security measures include Content Security Policy headers, XSS protection, HSTS enforcement, and secure static file serving with path traversal protection. The codebase demonstrates Go best practices with comprehensive error handling, graceful shutdown procedures, and environment-based configuration management.",
+				ImageURL:     "/static/images/website-portfolio.jpg",
+				ProjectURL:   "https://claykom.dev",
+				GithubURL:    "https://github.com/claykom/website",
+				Technologies: []string{"Go", "Templ", "Docker", "Nginx", "Security"},
 				Featured:     true,
-				CreatedAt:    time.Now().AddDate(0, -6, 0),
-				UpdatedAt:    time.Now().AddDate(0, -1, 0),
-			},
-			{
-				ID:           "2",
-				Title:        "Task Management API",
-				Slug:         "task-management-api",
-				Description:  "RESTful API for task management with authentication",
-				Content:      "A robust API built with Go, featuring JWT authentication, role-based access control, and comprehensive task management capabilities. The API supports creating, updating, and organizing tasks with tags, priorities, and due dates. It includes automated testing, API documentation with Swagger, and is containerized with Docker for easy deployment.",
-				ImageURL:     "/static/images/task-api.jpg",
-				ProjectURL:   "https://example.com/tasks",
-				GithubURL:    "https://github.com/claykom/task-api",
-				Technologies: []string{"Go", "PostgreSQL", "JWT", "REST"},
-				Featured:     true,
-				CreatedAt:    time.Now().AddDate(0, -3, 0),
-				UpdatedAt:    time.Now().AddDate(0, 0, -15),
+				CreatedAt:    time.Now().AddDate(0, 0, -3),
+				UpdatedAt:    time.Now(),
 			},
 		},
 	}

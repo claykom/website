@@ -10,6 +10,8 @@ import (
 // Config holds the application configuration
 type Config struct {
 	Server ServerConfig
+	TLS    TLSConfig
+	App    AppConfig
 }
 
 // ServerConfig holds server-specific configuration
@@ -19,6 +21,19 @@ type ServerConfig struct {
 	ReadTimeout  time.Duration
 	WriteTimeout time.Duration
 	IdleTimeout  time.Duration
+}
+
+// TLSConfig holds TLS/HTTPS configuration
+type TLSConfig struct {
+	Enabled  bool
+	CertFile string
+	KeyFile  string
+}
+
+// AppConfig holds application-specific configuration
+type AppConfig struct {
+	Environment string
+	LogLevel    string
 }
 
 // Load loads configuration from environment variables with sensible defaults
@@ -43,6 +58,11 @@ func Load() (*Config, error) {
 		return nil, fmt.Errorf("invalid IDLE_TIMEOUT: %w", err)
 	}
 
+	// TLS configuration
+	tlsCertFile := getEnv("TLS_CERT_FILE", "")
+	tlsKeyFile := getEnv("TLS_KEY_FILE", "")
+	tlsEnabled := tlsCertFile != "" && tlsKeyFile != ""
+
 	return &Config{
 		Server: ServerConfig{
 			Host:         getEnv("HOST", "0.0.0.0"),
@@ -50,6 +70,15 @@ func Load() (*Config, error) {
 			ReadTimeout:  readTimeout,
 			WriteTimeout: writeTimeout,
 			IdleTimeout:  idleTimeout,
+		},
+		TLS: TLSConfig{
+			Enabled:  tlsEnabled,
+			CertFile: tlsCertFile,
+			KeyFile:  tlsKeyFile,
+		},
+		App: AppConfig{
+			Environment: getEnv("ENV", "development"),
+			LogLevel:    getEnv("LOG_LEVEL", "info"),
 		},
 	}, nil
 }

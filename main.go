@@ -36,9 +36,16 @@ func main() {
 
 	// Start server in a goroutine
 	go func() {
-		log.Printf("Starting server on %s", addr)
-		if err := srv.ListenAndServe(); err != nil && err != http.ErrServerClosed {
-			log.Fatalf("Server failed to start: %v", err)
+		if cfg.TLS.Enabled {
+			log.Printf("Starting HTTPS server on %s", addr)
+			if err := srv.ListenAndServeTLS(cfg.TLS.CertFile, cfg.TLS.KeyFile); err != nil && err != http.ErrServerClosed {
+				log.Fatalf("HTTPS server failed to start: %v", err)
+			}
+		} else {
+			log.Printf("Starting HTTP server on %s", addr)
+			if err := srv.ListenAndServe(); err != nil && err != http.ErrServerClosed {
+				log.Fatalf("HTTP server failed to start: %v", err)
+			}
 		}
 	}()
 

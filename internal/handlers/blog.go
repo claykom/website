@@ -1,51 +1,155 @@
 package handlers
 
 import (
+	"bufio"
+	"bytes"
+	"log"
 	"net/http"
+	"os"
+	"path/filepath"
+	"sort"
+	"strings"
 	"time"
 
 	"github.com/claykom/website/internal/models"
 	"github.com/claykom/website/internal/views/pages"
+	"github.com/gomarkdown/markdown"
+	"github.com/gomarkdown/markdown/html"
+	"github.com/gomarkdown/markdown/parser"
 	"github.com/gorilla/mux"
 )
 
 // BlogHandler handles blog-related requests
 type BlogHandler struct {
-	// In a real application, this would be a database or repository
 	posts []models.BlogPost
 }
 
-// NewBlogHandler creates a new BlogHandler
+// NewBlogHandler creates a new BlogHandler and loads markdown posts
 func NewBlogHandler() *BlogHandler {
-	// Sample data for demonstration
-	return &BlogHandler{
-		posts: []models.BlogPost{
-			{
-				ID:          "1",
-				Title:       "Getting Started with Go",
-				Slug:        "getting-started-with-go",
-				Content:     "Go is a powerful programming language created by Google. It's designed for simplicity, efficiency, and excellent concurrency support. Whether you're building web servers, command-line tools, or distributed systems, Go provides the tools you need. In this post, we'll explore the fundamentals of Go and why it's become so popular among developers worldwide.",
-				Excerpt:     "Learn the basics of Go programming",
-				Author:      "Clay",
-				PublishedAt: time.Now().AddDate(0, 0, -7),
-				UpdatedAt:   time.Now().AddDate(0, 0, -7),
-				Tags:        []string{"go", "programming", "tutorial"},
-				Published:   true,
-			},
-			{
-				ID:          "2",
-				Title:       "Building Web Servers with Gorilla Mux",
-				Slug:        "building-web-servers-gorilla-mux",
-				Content:     "Gorilla Mux is a powerful HTTP router and URL matcher for building Go web servers. It provides more features than the standard library's http.ServeMux, including path variables, method-based routing, and middleware support. In this tutorial, we'll build a complete web server using Gorilla Mux and explore best practices for structuring your Go web applications.",
-				Excerpt:     "Learn how to build robust web servers",
-				Author:      "Clay",
-				PublishedAt: time.Now().AddDate(0, 0, -3),
-				UpdatedAt:   time.Now().AddDate(0, 0, -3),
-				Tags:        []string{"go", "web", "gorilla-mux"},
-				Published:   true,
-			},
-		},
+	handler := &BlogHandler{
+		posts: []models.BlogPost{},
 	}
+
+	// Load posts from markdown files
+	if err := handler.loadMarkdownPosts(); err != nil {
+		log.Printf("Error loading markdown posts: %v", err)
+	}
+
+	return handler
+}
+
+// loadMarkdownPosts reads all markdown files from content/blog directory
+func (h *BlogHandler) loadMarkdownPosts() error {
+	blogDir := "content/blog"
+
+	files, err := os.ReadDir(blogDir)
+	if err != nil {
+		return err
+	}
+
+	for _, file := range files {
+		if file.IsDir() || !strings.HasSuffix(file.Name(), ".md") {
+			continue
+		}
+
+		filePath := filepath.Join(blogDir, file.Name())
+		post, err := h.parseMarkdownFile(filePath)
+		if err != nil {
+			log.Printf("Error parsing %s: %v", filePath, err)
+			continue
+		}
+
+		h.posts = append(h.posts, post)
+	}
+
+	// Sort posts by date (newest first)
+	sort.Slice(h.posts, func(i, j int) bool {
+		return h.posts[i].PublishedAt.After(h.posts[j].PublishedAt)
+	})
+
+	return nil
+}
+
+// parseMarkdownFile parses a markdown file with frontmatter
+func (h *BlogHandler) parseMarkdownFile(filePath string) (models.BlogPost, error) {
+	content, err := os.ReadFile(filePath)
+	if err != nil {
+		return models.BlogPost{}, err
+	}
+
+	// Split frontmatter and content
+	parts := bytes.SplitN(content, []byte("---"), 3)
+	if len(parts) < 3 {
+		return models.BlogPost{}, err
+	}
+
+	frontmatter := string(parts[1])
+	markdownContent := string(parts[2])
+
+	// Parse frontmatter
+	post := models.BlogPost{
+		Published: true,
+		UpdatedAt: time.Now(),
+	}
+
+	scanner := bufio.NewScanner(strings.NewReader(frontmatter))
+	for scanner.Scan() {
+		line := strings.TrimSpace(scanner.Text())
+		if line == "" {
+			continue
+		}
+
+		parts := strings.SplitN(line, ":", 2)
+		if len(parts) != 2 {
+			continue
+		}
+
+		key := strings.TrimSpace(parts[0])
+		value := strings.TrimSpace(parts[1])
+
+		switch key {
+		case "title":
+			post.Title = value
+		case "slug":
+			post.Slug = value
+			post.ID = value
+		case "author":
+			post.Author = value
+		case "date":
+			if t, err := time.Parse("2006-01-02", value); err == nil {
+				post.PublishedAt = t
+			}
+		case "excerpt":
+			post.Excerpt = value
+		case "tags":
+			// Parse tags: [go, programming, tutorial]
+			value = strings.Trim(value, "[]")
+			tags := strings.Split(value, ",")
+			for _, tag := range tags {
+				post.Tags = append(post.Tags, strings.TrimSpace(tag))
+			}
+		}
+	}
+
+	// Convert markdown to HTML
+	post.Content = h.markdownToHTML(markdownContent)
+
+	return post, nil
+}
+
+// markdownToHTML converts markdown to HTML
+func (h *BlogHandler) markdownToHTML(md string) string {
+	extensions := parser.CommonExtensions | parser.AutoHeadingIDs | parser.FencedCode
+	p := parser.NewWithExtensions(extensions)
+
+	htmlFlags := html.CommonFlags | html.HrefTargetBlank
+	opts := html.RendererOptions{Flags: htmlFlags}
+	renderer := html.NewRenderer(opts)
+
+	doc := p.Parse([]byte(md))
+	htmlBytes := markdown.Render(doc, renderer)
+
+	return string(htmlBytes)
 }
 
 // ListPosts returns all published blog posts
@@ -89,37 +193,3 @@ func (h *BlogHandler) GetPost(w http.ResponseWriter, r *http.Request) {
 
 	http.Error(w, "Blog post not found", http.StatusNotFound)
 }
-
-// API handlers (commented out - keeping for reference)
-// func (h *BlogHandler) ListPostsAPI(w http.ResponseWriter, r *http.Request) {
-// 	publishedPosts := make([]models.BlogPost, 0)
-// 	for _, post := range h.posts {
-// 		if post.Published {
-// 			publishedPosts = append(publishedPosts, post)
-// 		}
-// 	}
-//
-// 	respondWithJSON(w, http.StatusOK, map[string]interface{}{
-// 		"posts": publishedPosts,
-// 		"count": len(publishedPosts),
-// 	})
-// }
-//
-// func (h *BlogHandler) GetPostAPI(w http.ResponseWriter, r *http.Request) {
-// 	vars := mux.Vars(r)
-// 	slug := vars["slug"]
-//
-// 	if slug == "" {
-// 		respondWithError(w, http.StatusBadRequest, "Slug parameter is required")
-// 		return
-// 	}
-//
-// 	for _, post := range h.posts {
-// 		if post.Slug == slug && post.Published {
-// 			respondWithJSON(w, http.StatusOK, post)
-// 			return
-// 		}
-// 	}
-//
-// 	respondWithError(w, http.StatusNotFound, "Blog post not found")
-// }
