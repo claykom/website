@@ -1,0 +1,28 @@
+package pages
+
+import "github.com/claykom/website/internal/views/components"
+
+templ Home() {
+	@components.Layout("Home - Clay's Portfolio") {
+		<section class="hero">
+			<div class="container">
+				<h1>Welcome to My Portfolio</h1>
+				<p class="lead">Software Engineer | Go Developer | Web Enthusiast</p>
+				<div class="cta-buttons">
+					<a href="/portfolio" class="btn btn-primary">View Projects</a>
+					<a href="/blog" class="btn btn-secondary">Read Blog</a>
+				</div>
+			</div>
+		</section>
+		<section class="about">
+			<div class="container">
+				<h2>About Me</h2>
+				<p>
+					I'm a passionate software engineer specializing in building robust web applications
+					with Go and modern web technologies. I love creating efficient, scalable solutions
+					and sharing my knowledge through writing.
+				</p>
+			</div>
+		</section>
+	}
+}

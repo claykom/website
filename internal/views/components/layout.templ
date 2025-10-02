@@ -1,0 +1,45 @@
+package components
+
+templ Layout(title string) {
+	<!DOCTYPE html>
+	<html lang="en">
+		<head>
+			<meta charset="UTF-8"/>
+			<meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+			<title>{ title }</title>
+			<link rel="stylesheet" href="/static/css/style.css"/>
+		</head>
+		<body>
+			@Header()
+			<main>
+				{ children... }
+			</main>
+			@Footer()
+		</body>
+	</html>
+}
+
+templ Header() {
+	<header>
+		<nav>
+			<div class="container">
+				<div class="logo">
+					<a href="/">Clay's Portfolio</a>
+				</div>
+				<ul class="nav-links">
+					<li><a href="/">Home</a></li>
+					<li><a href="/blog">Blog</a></li>
+					<li><a href="/portfolio">Portfolio</a></li>
+				</ul>
+			</div>
+		</nav>
+	</header>
+}
+
+templ Footer() {
+	<footer>
+		<div class="container">
+			<p>&copy; 2025 Clay. All rights reserved.</p>
+		</div>
+	</footer>
+}

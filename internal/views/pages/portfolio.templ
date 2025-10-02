@@ -1,0 +1,91 @@
+package pages
+
+import (
+	"github.com/claykom/website/internal/models"
+	"github.com/claykom/website/internal/views/components"
+	"fmt"
+)
+
+templ PortfolioList(projects []models.Project) {
+	@components.Layout("Portfolio - Clay's Portfolio") {
+		<section class="portfolio">
+			<div class="container">
+				<h1>Portfolio</h1>
+				<p class="lead">A collection of my recent projects and work</p>
+				<div class="portfolio-grid">
+					for _, project := range projects {
+						@ProjectCard(project)
+					}
+				</div>
+			</div>
+		</section>
+	}
+}
+
+templ ProjectCard(project models.Project) {
+	<article class="project-card">
+		if project.Featured {
+			<span class="badge">Featured</span>
+		}
+		<div class="project-image">
+			<img src={ project.ImageURL } alt={ project.Title }/>
+		</div>
+		<div class="project-content">
+			<h2><a href={ templ.URL(fmt.Sprintf("/portfolio/%s", project.Slug)) }>{ project.Title }</a></h2>
+			<p class="description">{ project.Description }</p>
+			<div class="technologies">
+				for _, tech := range project.Technologies {
+					<span class="tech-tag">{ tech }</span>
+				}
+			</div>
+			<div class="project-links">
+				if project.ProjectURL != "" {
+					<a href={ templ.URL(project.ProjectURL) } target="_blank" rel="noopener noreferrer" class="btn btn-small">View Project</a>
+				}
+				if project.GithubURL != "" {
+					<a href={ templ.URL(project.GithubURL) } target="_blank" rel="noopener noreferrer" class="btn btn-small btn-secondary">GitHub</a>
+				}
+			</div>
+		</div>
+	</article>
+}
+
+templ ProjectDetail(project models.Project) {
+	@components.Layout(project.Title + " - Clay's Portfolio") {
+		<section class="project-detail">
+			<div class="container">
+				<article>
+					<header class="project-header">
+						if project.Featured {
+							<span class="badge">Featured Project</span>
+						}
+						<h1>{ project.Title }</h1>
+						<p class="description">{ project.Description }</p>
+						<div class="technologies">
+							for _, tech := range project.Technologies {
+								<span class="tech-tag">{ tech }</span>
+							}
+						</div>
+					</header>
+					<div class="project-image-large">
+						<img src={ project.ImageURL } alt={ project.Title }/>
+					</div>
+					<div class="project-content">
+						<p>{ project.Content }</p>
+					</div>
+					<footer class="project-footer">
+						<div class="project-links">
+							if project.ProjectURL != "" {
+								<a href={ templ.URL(project.ProjectURL) } target="_blank" rel="noopener noreferrer" class="btn btn-primary">View Live Project</a>
+							}
+							if project.GithubURL != "" {
+								<a href={ templ.URL(project.GithubURL) } target="_blank" rel="noopener noreferrer" class="btn btn-secondary">View on GitHub</a>
+							}
+						</div>
+						<a href="/portfolio" class="back-link">← Back to Portfolio</a>
+					</footer>
+				</article>
+			</div>
+		</section>
+	}
+}
