@@ -22,9 +22,10 @@ func SecureStaticHandler(root http.Dir) http.Handler {
 			return
 		}
 
-		// Clean and validate the path
+		// Clean the path and ensure it's safe
 		cleanPath := filepath.Clean(path)
-		if cleanPath != path {
+		// Ensure the cleaned path doesn't try to escape the directory
+		if strings.Contains(cleanPath, "..") || cleanPath == "." {
 			http.Error(w, "Forbidden", http.StatusForbidden)
 			return
 		}
