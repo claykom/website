@@ -115,13 +115,16 @@ make docker-run
 make test          # Run all tests
 make coverage      # Run with coverage report
 make test-race     # Detect race conditions  
+make test-verbose  # Verbose test output
 make bench         # Performance benchmarks
 make security      # Security analysis
 
-# Manual commands
-go test ./internal/config ./internal/handlers ./internal/middleware
-go test -cover ./internal/config ./internal/handlers ./internal/middleware
-go test -race ./internal/config ./internal/handlers ./internal/middleware
+# Manual commands (equivalent)
+go test ./...              # Run all tests
+go test -cover ./...       # Run with coverage
+go test -race ./...        # Race condition detection
+go test -v ./...           # Verbose output
+go test -bench=. ./...     # Run benchmarks
 ```
 
 ## 🔒 Security Features
@@ -185,6 +188,38 @@ make build
 
 # Development server with hot reload
 make dev
+```
+
+### Available Make Targets
+
+```bash
+# Development Commands
+make help          # Show all available targets
+make deps          # Download and tidy dependencies
+make dev           # Run in development mode
+make run           # Build and run the application
+
+# Code Quality
+make fmt           # Format Go code
+make vet           # Run go vet static analysis
+make lint          # Run golint (requires golint)
+make security      # Run security checks
+
+# Testing
+make test          # Run all tests (uses go test ./...)
+make coverage      # Run tests with coverage report
+make coverage-html # Generate HTML coverage report  
+make test-verbose  # Run tests with verbose output
+make test-race     # Run tests with race detection
+make bench         # Run benchmarks
+
+# Build & Deploy
+make build         # Build optimized binary
+make clean         # Clean build artifacts
+
+# Docker
+make docker-build  # Build Docker image
+make docker-run    # Run Docker container
 ```
 
 ## 🤝 Contributing

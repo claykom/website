@@ -13,7 +13,25 @@ BINARY_NAME=website
 ## help: Show this help message
 help:
 	@echo "Available targets:"
-	@sed -n 's/^##//p' $(MAKEFILE_LIST)
+	@echo "  all              Run fmt, vet, lint, test, and build"
+	@echo "  build            Build the binary"
+	@echo "  clean            Clean build artifacts"
+	@echo "  test             Run all tests"
+	@echo "  coverage         Run tests with coverage report"
+	@echo "  coverage-html    Generate HTML coverage report"
+	@echo "  test-verbose     Run tests with verbose output"
+	@echo "  test-race        Run tests with race detection"
+	@echo "  bench            Run benchmarks"
+	@echo "  fmt              Format Go code"
+	@echo "  vet              Run go vet"
+	@echo "  lint             Run golint (requires golint to be installed)"
+	@echo "  deps             Download and tidy dependencies"
+	@echo "  run              Build and run the application"
+	@echo "  dev              Run in development mode"
+	@echo "  docker-build     Build Docker image"
+	@echo "  docker-run       Run Docker container"
+	@echo "  security         Run security checks"
+	@echo "  help             Show this help message"
 
 ## all: Run fmt, vet, lint, test, and build
 all: fmt vet test build
@@ -93,7 +111,3 @@ docker-run:
 security:
 	$(GOCMD) vet ./...
 	@echo "Run 'gosec ./...' for additional security checks (requires gosec)"
-
-## ci: Run CI pipeline (fmt, vet, test, build)
-ci: fmt vet test build
-	@echo "CI pipeline completed successfully"
