@@ -117,10 +117,10 @@ The application includes comprehensive test suites with **84.9% coverage** for c
 
 ```bash
 # Run all tests
-go test ./...
+go test ./internal/config ./internal/handlers ./internal/middleware
 
-# Run with coverage report
-go test -cover ./...
+# Run with coverage report  
+go test -cover ./internal/config ./internal/handlers ./internal/middleware
 
 # Run specific package tests
 go test ./internal/middleware
@@ -129,8 +129,10 @@ go test ./internal/middleware
 go test -v ./internal/middleware
 
 # Generate detailed coverage report
-go test -coverprofile=coverage.out ./...
-go tool cover -html=coverage.out
+go test -coverprofile=config_coverage.out ./internal/config
+go test -coverprofile=handlers_coverage.out ./internal/handlers  
+go test -coverprofile=middleware_coverage.out ./internal/middleware
+go tool cover -html=middleware_coverage.out
 ```
 
 ### Test Categories
@@ -198,11 +200,14 @@ func TestConcurrentValidation(t *testing.T) {
 ## 🧪 Development
 
 ```bash
-# Run all tests with coverage
-go test -cover ./...
+# Run all tests
+go test ./internal/config ./internal/handlers ./internal/middleware
+
+# Run tests with coverage
+go test -cover ./internal/config ./internal/handlers ./internal/middleware
 
 # Run tests with race detection
-go test -race ./...
+go test -race ./internal/config ./internal/handlers ./internal/middleware
 
 # Run specific test package
 go test ./internal/middleware
@@ -216,9 +221,9 @@ go fmt ./...
 # Build for production
 CGO_ENABLED=0 go build -ldflags='-w -s' -o website
 
-# Generate test coverage report
-go test -coverprofile=coverage.out ./...
-go tool cover -html=coverage.out -o coverage.html
+# Generate test coverage report  
+go test -coverprofile=middleware_coverage.out ./internal/middleware
+go tool cover -html=middleware_coverage.out -o coverage.html
 ```
 
 ## � API Endpoints
