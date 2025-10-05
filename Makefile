@@ -32,29 +32,29 @@ clean:
 
 ## test: Run all tests
 test:
-	$(GOTEST) ./internal/config ./internal/handlers ./internal/middleware
+	$(GOTEST) ./...
 
 ## coverage: Run tests with coverage report
 coverage:
-	$(GOTEST) -cover ./internal/config ./internal/handlers ./internal/middleware
+	$(GOTEST) -cover ./...
 
 ## coverage-html: Generate HTML coverage report
 coverage-html:
-	$(GOTEST) -coverprofile=middleware_coverage.out ./internal/middleware
+	$(GOTEST) -coverprofile=middleware_coverage.out ./...
 	go tool cover -html=middleware_coverage.out -o coverage.html
 	@echo "Coverage report generated: coverage.html"
 
 ## test-verbose: Run tests with verbose output
 test-verbose:
-	$(GOTEST) -v ./internal/config ./internal/handlers ./internal/middleware
+	$(GOTEST) -v ./...
 
 ## test-race: Run tests with race detection
 test-race:
-	$(GOTEST) -race ./internal/config ./internal/handlers ./internal/middleware
+	$(GOTEST) -race ./...
 
 ## bench: Run benchmarks
 bench:
-	$(GOTEST) -bench=. ./internal/middleware
+	$(GOTEST) -bench=. ./...
 
 ## fmt: Format Go code
 fmt:
