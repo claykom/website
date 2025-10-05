@@ -101,6 +101,94 @@ Key environment variables:
 - **Container Security**: Non-root user and read-only filesystem
 - **HTTPS Support**: TLS encryption for production deployments
 
+## 🧪 Testing
+
+### Test Coverage
+
+The application includes comprehensive test suites with **84.9% coverage** for critical middleware:
+
+| Package | Coverage | Tests | Description |
+|---------|----------|-------|-------------|
+| **Middleware** | 84.9% | 186 tests | Security, validation, static file handling |
+| **Handlers** | 79.5% | 35 tests | HTTP request handling, responses |
+| **Config** | 93.5% | 20 tests | Environment variables, validation |
+
+### Running Tests
+
+```bash
+# Run all tests
+go test ./...
+
+# Run with coverage report
+go test -cover ./...
+
+# Run specific package tests
+go test ./internal/middleware
+
+# Run with verbose output
+go test -v ./internal/middleware
+
+# Generate detailed coverage report
+go test -coverprofile=coverage.out ./...
+go tool cover -html=coverage.out
+```
+
+### Test Categories
+
+#### Security Testing
+- **Path Traversal Protection**: Tests against `../` attacks, URL encoding, double encoding
+- **Input Validation**: Slug validation, filename sanitization, content-type checking
+- **Rate Limiting**: Token bucket algorithm, concurrent access, IP-based limiting
+- **Static File Security**: Extension filtering, header validation, path sanitization
+
+#### Edge Cases & Error Handling
+- **Malformed Requests**: Invalid URLs, Unicode attacks, null byte injection
+- **Concurrent Access**: 100+ simultaneous requests, thread safety validation
+- **Memory Protection**: Large payload handling, content-length limits
+- **File System Security**: Dangerous file types, symbolic links, directory traversal
+
+#### Performance Testing
+- **Benchmark Tests**: Validation performance, middleware overhead measurement
+- **Stress Testing**: High-concurrency scenarios, memory usage validation
+- **Cache Testing**: Static file caching, header optimization
+
+### Test Structure
+
+```
+internal/
+├── middleware/
+│   ├── validation_test.go      # Input validation (71 tests)
+│   ├── static_test.go          # Static file handling (45 tests)
+│   ├── error_edge_cases_test.go # Error handling (46 tests)
+│   ├── headers_test.go         # Security headers (12 tests)
+│   └── ratelimit_test.go       # Rate limiting (12 tests)
+├── handlers/
+│   ├── handlers_test.go        # HTTP handlers (25 tests)
+│   └── blog_portfolio_test.go  # Content handling (10 tests)
+└── testutils/
+    └── testutils.go           # Shared testing utilities
+```
+
+### Security Test Examples
+
+```go
+// Path traversal protection
+func TestPathTraversal(t *testing.T) {
+    attacks := []string{
+        "/../../../etc/passwd",
+        "/%2E%2E%2F%2E%2E%2F",
+        "/..\\windows\\system32",
+    }
+    // All attacks should be blocked
+}
+
+// Concurrent validation safety
+func TestConcurrentValidation(t *testing.T) {
+    // 100 simultaneous requests
+    // Validates thread safety
+}
+```
+
 ## 📊 Monitoring
 
 - **Health Check**: `GET /health` returns application status
@@ -110,14 +198,27 @@ Key environment variables:
 ## 🧪 Development
 
 ```bash
-# Run tests
-go test ./...
+# Run all tests with coverage
+go test -cover ./...
 
-# Security check
+# Run tests with race detection
+go test -race ./...
+
+# Run specific test package
+go test ./internal/middleware
+
+# Run security analysis
 go vet ./...
+
+# Format code
+go fmt ./...
 
 # Build for production
 CGO_ENABLED=0 go build -ldflags='-w -s' -o website
+
+# Generate test coverage report
+go test -coverprofile=coverage.out ./...
+go tool cover -html=coverage.out -o coverage.html
 ```
 
 ## � API Endpoints
@@ -131,11 +232,22 @@ CGO_ENABLED=0 go build -ldflags='-w -s' -o website
 
 ## 🤝 Contributing
 
-1. Fork the repository
-2. Create a feature branch
-3. Add tests for new functionality
-4. Follow Go coding standards
-5. Submit a pull request
+1. **Fork** the repository
+2. **Create** a feature branch (`git checkout -b feature/amazing-feature`)
+3. **Write tests** for new functionality (minimum 80% coverage required)
+4. **Run the test suite** (`go test ./...`) and ensure all tests pass
+5. **Follow Go standards** (`go fmt`, `go vet`, `golint`)
+6. **Test security** if adding middleware or handlers
+7. **Update documentation** including README if needed
+8. **Submit** a pull request with a clear description
+
+### Testing Guidelines
+
+- **Security First**: All security-related code must have comprehensive tests
+- **Coverage Target**: Maintain or improve existing coverage percentages
+- **Edge Cases**: Include tests for error conditions and edge cases  
+- **Concurrency**: Test concurrent access patterns where applicable
+- **Performance**: Add benchmark tests for performance-critical code
 
 ## 📄 License
 
